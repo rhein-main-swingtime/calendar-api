@@ -8,62 +8,55 @@ declare(strict_types=1);
 
 namespace rmswing;
 
-class EventCollection implements \JsonSerializable, EventsHandlerInterface
+use rmswing\EventParametersInterface;
+
+/**
+ * Class EventCollection
+ * @package rmswing
+ */
+class EventCollection implements EventParametersInterface
 {
-
-    /** @var string */
-    protected $sortOrder = self::DEFAULT_SORT_ORDER;
-
-    /** @var bool */
-    protected $pagingEnabled = self::DEFAULT_PAGING;
-
-    /** @var int Must be > 0 */
-    protected $pageLength = self::DEFAULT_PAGE_LENGTH;
-
-    /** @var string Must be parsable by strtotime() */
-    protected $startDate = self::DEFAULT_START_DATE;
-
-    /** @var string Must be parsable by strtotime() */
-    protected $endDate = self::DEFAULT_END_DATE;
-
-    /** @var int */
-    protected $limit = self::DEFAULT_LIMIT;
-
-    /** @var bool If true, builds an extra page with events currently running */
-    protected $currentlyRunning = self::DEFAULT_GET_CURRENTLY_RUNNING;
 
     /** @var Event[] $events */
     protected $events = [];
 
-    // Methods
+    /**
+     * @var string
+     */
+    protected $sortedDirection = '';
 
-    private function genUniqueID(Event $event): string {
-        return str_replace('.',
+    /**
+     * @return EventCollection
+     */
+    public static function create()
+    {
+       return new self();
+    }
+
+
+    /**
+     * @param Event $event
+     * @return string
+     */
+    private function genUniqueID(Event $event): string
+    {
+        return str_replace(
+            '.',
             '_',
             uniqid(
                 md5($event->getSourceEventId()) . '_',
                 true
-            ));
+            )
+        );
     }
 
+    /**
+     * @param Event $event
+     */
     public function addToCollection(Event $event): void
     {
         $id = $this->genUniqueID($event);
         $this->events[$id] = $event;
-    }
-
-    public function jsonSerialize(): array
-    {
-        $this->sortCollection();
-
-        $out = [];
-        $out['events'] = $this->events;
-
-        if ($this->currentlyRunning === true || $this->pagingEnabled === true) {
-            $out = array_merge($out, $this->getEventPages());
-        }
-
-        return $out;
     }
 
     /**
@@ -73,7 +66,7 @@ class EventCollection implements \JsonSerializable, EventsHandlerInterface
      */
     public function setSortOrder(string $sortOrder): void
     {
-        if (!in_array($sortOrder, self::VALID_ORDERS)) {
+        if (!in_array($sortOrder, self::SORT_ORDER_VALID)) {
             throw new \InvalidArgumentException("$sortOrder is not allowed");
         }
 
@@ -85,7 +78,7 @@ class EventCollection implements \JsonSerializable, EventsHandlerInterface
      * Enables paging for the collection
      * @param bool $paging
      */
-    public function enablePaging(bool $paging = self::DEFAULT_PAGING): void
+    public function enablePaging(bool $paging): void
     {
         $this->pageingEnabled = $paging;
     }
@@ -128,18 +121,70 @@ class EventCollection implements \JsonSerializable, EventsHandlerInterface
     /**
      * @return Event[]
      */
-    public function getEvents(): array
-    {
-        $this->sortCollection();
-        return $this->events;
+    public function getEvents(
+        string $order,
+        $startTime,
+        $endTime,
+        bool $paging,
+        ?int $pageLength,
+        ?int $limit,
+        ?int $offset
+    ): array {
+
+        if (gettype($startTime) === 'string') {
+            $startTime = strtotime($startTime);
+        }
+
+        if (gettype($endTime) === 'string') {
+            $endTime = strtotime($endTime);
+        }
+
+
+        $out['events'] = $this->getSortedCollection(
+            $order,
+            $startTime,
+            $endTime,
+            $limit,
+            $offset
+        );
+
+        // @todo find a more elegant solution
+        if ($paging === true) {
+            $out = $this->getEventPages($out, $pageLength);
+        }
+
+        return $out;
     }
 
-    private function sortCollection(): void
+    /**
+     * @param string $order
+     * @param $startDate
+     * @param $endDate
+     * @param int|null $limit
+     * @param int|null $offset
+     * @return array
+     */
+    private function getSortedCollection(
+        string $order,
+        $startDate,
+        $endDate,
+        ?int $limit,
+        ?int $offset
+    ): array
     {
-        $order = $this->sortOrder;
+        $sortedCollection = array_filter(
+            $this->events,
+            function($element) use ($startDate, $endDate) {
+                /** @var Event $element */
+                return (
+                    $element->getStartTime() >= $startDate
+                    && $element->getEndTime() <= $endDate
+                );
+            }
+        );
 
         uasort(
-            $this->events,
+            $sortedCollection,
             function ($a, $b) use ($order) {
                 /** @var Event $a */
                 /** @var Event $b */
@@ -152,35 +197,48 @@ class EventCollection implements \JsonSerializable, EventsHandlerInterface
                 return $bTime - $aTime;
             }
         );
-    }
 
-    private function getEventPages(): array
-    {
-        $out = [];
-        $buffer = [];
-
-        $now = time() + 15 * 60 ; // We'll show events that actually start in 15 minutes as currently running.
-        $this->currentlyRunning;
-
-        foreach ($this->events as $index => $event) {
-            /** @var Event $event */
-            $startTime = $event->getStartTime();
-            $endTime = $event->getEndTime();
-
-            if ($this->currentlyRunning
-                && $startTime < $now
-                && $endTime > $now) {
-                $out['currentlyRunning'][] = $index;
-            }
-
-            $buffer[] = $index;
+        if ($limit !== null || $offset !== null) {
+            $sortedCollection = array_slice(
+                $sortedCollection,
+                $offset ?? 0,
+                $limit
+            );
         }
 
-        $out['pages'] = array_chunk($buffer, $this->pageLength, false);
+        $now = time() + 15 * 60; // 15 Minutes because nobody ever is on time...
 
-        return $out;
+        foreach ($sortedCollection as $ele) {
+            /** @var Event $ele */
+            $ele->isCurrent($now);
+        }
+
+        return $sortedCollection;
     }
 
+    /**
+     * @param array $collection
+     * @param int $pageLength
+     * @return array
+     */
+    private function getEventPages(
+        array $collection,
+        int $pageLength
+    ): array
+    {
+
+        $now = time() + 15 * 60 ; // We'll show events that actually start in 15 minutes as currently running.
+        $collection['pages'] = array_chunk(
+            array_keys($collection['events']),
+            $pageLength, false
+        );
+
+        return $collection;
+    }
+
+    /**
+     * @param EventCollection $collection
+     */
     public function addCollectionToCollection(EventCollection $collection): void
     {
         foreach ($collection->getEvents() as $event) {
@@ -188,6 +246,9 @@ class EventCollection implements \JsonSerializable, EventsHandlerInterface
         }
     }
 
+    /**
+     * @param mixed ...$collections
+     */
     public function addCollectionsToCollection(...$collections)
     {
         foreach ($collections as $collection) {

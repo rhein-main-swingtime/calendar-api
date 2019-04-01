@@ -44,6 +44,8 @@
       <path value="$PROJECT_DIR$/vendor/cache/filesystem-adapter" />
       <path value="$PROJECT_DIR$/vendor/cache/tag-interop" />
       <path value="$PROJECT_DIR$/vendor/zeuxisoo/slim-whoops" />
+      <path value="$PROJECT_DIR$/vendor/davidepastore/slim-validation" />
+      <path value="$PROJECT_DIR$/vendor/respect/validation" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />
