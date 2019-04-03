@@ -1,11 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/**
- * DOCBLOCKSTUFF
- * @author: mfk
- */
-
 namespace rmswing;
 
 use Monolog\Logger;
@@ -13,7 +8,12 @@ use \Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use \Psr\Http\Message\ResponseInterface as ResponseInterface;
 use Slim\App;
 
-abstract class AbstractController implements ParametersInterface
+/**
+ * Abstract Controller should be implemented by all controllers
+ *
+ * @author mafeka https://github.com/mafeka
+ */
+abstract class AbstractController
 {
 
     /**

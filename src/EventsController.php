@@ -5,7 +5,7 @@ declare (strict_types = 1);
 
 /**
  * DOCBLOCKSTUFF
- * @author: mfk
+ * @author mafeka <felix@kakrow.me>
  */
 
 namespace rmswing;
@@ -16,8 +16,8 @@ use rmswing\eventsources\Google;
 
 class EventsController extends AbstractController implements EventParametersInterface
 {
-    /** 
-     * 
+    /**
+     *
      */
     public static function create(): EventsController
     {

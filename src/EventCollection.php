@@ -1,17 +1,13 @@
 <?php
 declare (strict_types = 1);
 
-/**
- * DOCBLOCKSTUFF
- * @author: mfk
- */
-
 namespace rmswing;
 
 use rmswing\EventParametersInterface;
 
 /**
  * Class EventCollection
+ * @author mafeka https://github.com/mafeka
  * @package rmswing
  */
 class EventCollection implements EventParametersInterface
@@ -79,6 +75,7 @@ class EventCollection implements EventParametersInterface
 
     /**
      * Enables paging for the collection
+     *
      * @param bool $paging
      */
     public function enablePaging(bool $paging): void
@@ -132,8 +129,7 @@ class EventCollection implements EventParametersInterface
         ?int $pageLength,
         ?int $limit,
         ?int $offset
-    ): array
-    {
+    ): array {
 
         if (gettype($startTime) === 'string') {
             $startTime = strtotime($startTime);
@@ -142,7 +138,6 @@ class EventCollection implements EventParametersInterface
         if (gettype($endTime) === 'string') {
             $endTime = strtotime($endTime);
         }
-
 
         $out['events'] = $this->getSortedCollection(
             $order,
@@ -174,14 +169,33 @@ class EventCollection implements EventParametersInterface
         $endDate,
         ?int $limit,
         ?int $offset
-    ): array
-    {
+    ): array {
         $sortedCollection = array_filter(
             $this->events,
             function ($element) use ($startDate, $endDate) {
                 /** @var Event $element */
-                return ($element->getStartTime() >= $startDate
-                    && $element->getEndTime() <= $endDate);
+
+                $eventStartTime = $element->getStartTime();
+                $eventEndTime   = $element->getEndTime();
+
+                if ($eventStartTime() >= $startDate
+                    && $eventStartTime() <= $endDate) {
+                        // Event starts after the searched for start date
+                        // AND event ends before the searched-for end date
+                        return true;
+                } elseif ($eventStartTime < $startDate
+                          && $eventEndTime > $startDate) {
+                         // Event has already started
+                         // AND event is ends after searched-for start date
+                         return true;
+                } elseif ($eventStartTime >= $startDate
+                          && $eventEndTime > $endDate) {
+                        // event starts after searched-for start date
+                        // AND event ends after searched-for end date
+                        return true;
+                }
+                // all other cases:
+                return false;
             }
         );
 
@@ -226,8 +240,7 @@ class EventCollection implements EventParametersInterface
     private function getEventPages(
         array $collection,
         int $pageLength
-    ): array
-    {
+    ): array {
         $collection['pages'] = array_chunk(
             array_keys($collection['events']),
             $pageLength,

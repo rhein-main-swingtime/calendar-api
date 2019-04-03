@@ -1,13 +1,14 @@
 <?php
 declare (strict_types = 1);
 
-/**
- * DOCBLOCKSTUFF
- * @author: mfk
- */
-
 namespace rmswing;
 
+/**
+ * Parameters used in calling the EventsController
+ *
+ * @author mafeka https://github.com/mafeka
+ * @package rmswing
+ */
 interface EventParametersInterface
 {
 

@@ -5,7 +5,7 @@ use rmswing\EventsController;
 
 /**
  * Slim App configs
- * @author: mfk
+ * @author mafeka <felix@kakrow.me>
  */
 
 $config = [];

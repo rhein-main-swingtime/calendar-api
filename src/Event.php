@@ -1,11 +1,6 @@
 <?php
 declare (strict_types = 1);
 
-/**
- * DOCBLOCKSTUFF
- * @author: mfk
- */
-
 namespace rmswing;
 
 
@@ -13,6 +8,7 @@ namespace rmswing;
  * Event Class represents a generic event.
  *
  * These are the building blocks given back to a frontend
+ * @author mafeka https://github.com/mafeka
  * @package rmswing
  */
 class Event implements \JsonSerializable
@@ -114,7 +110,7 @@ class Event implements \JsonSerializable
 
     /**
      * Sets a flag if the event happens right now.
-     * 
+     *
      * @param int|null $time Timestamp of current time.
      * @return void
      */

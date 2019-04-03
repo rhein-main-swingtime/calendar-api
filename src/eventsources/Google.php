@@ -12,9 +12,10 @@ use rmswing\EventCollection;
 use rmswing\EventLabeler;
 
 /**
- * DOCBLOCKSTUFF
- * @todo make this stateless
- * @author: mfk
+ * Implements Google Calendar API as an Eventsource
+ *
+ * @author mafeka https://github.com/mafeka
+ * @package rmswing
  */
 class Google
 {
@@ -167,21 +168,26 @@ class Google
             } catch (\Exception $e) {
                 // @todo do something fancy here with errors, logging and shit.
             }
-
             /** @var \Google_Service_Calendar_Event $nextEvent */
             while ($nextEvent = $gEvents->next()) {
-                $collection->addToCollection(
-                    new Event(
-                        (int) strtotime($nextEvent->getStart()->getDateTime()),
-                        (int) strtotime($nextEvent->getEnd()->getDateTime()),
-                        (string) $nextEvent->getLocation(),
-                        (string) $nextEvent->getId(),
-                        (string) $nextEvent->getHtmlLink(),
-                        (string) $nextEvent->getSummary(),
-                        $labelPrinter->getLabelsForSource($source),
-                        (string) $nextEvent->getDescription()
-                    )
-                );
+
+                    $eventStart = $nextEvent->getStart();
+                    $eventEnd = $nextEvent->getEnd();
+                    $collection->addToCollection(
+                        new Event(
+                            (int) strtotime($eventStart->getDateTime() ?? $eventStart->getDate()) ,
+                            (int) strtotime($eventEnd->getDateTime() ?? $eventEnd->getDate()),
+                            (string) $nextEvent->getLocation(),
+                            (string) $nextEvent->getId(),
+                            (string) $nextEvent->getHtmlLink(),
+                            (string) $nextEvent->getSummary(),
+                            $labelPrinter->getLabelsForSource($source),
+                            (string) $nextEvent->getDescription()
+                        )
+                    );
+
+
+
             }
         }
     }

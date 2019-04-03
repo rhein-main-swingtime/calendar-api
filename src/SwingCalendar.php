@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * DOCBLOCKSTUFF
- * @author: mfk
+ * @author mafeka <felix@kakrow.me>
  */
 
 namespace rmswing;

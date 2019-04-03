@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-/**
- * DOCBLOCKSTUFF
- * @author: mfk
- */
-
 namespace rmswing;
 
-
+/**
+ * This can be used to search for a label
+ *
+ * @package rmswing
+ * @author mafeka https://github.com/mafeka
+ */
 class EventLabeler
 {
     /** @var array */
