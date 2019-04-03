@@ -25,7 +25,7 @@ $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
 
-$container['logger'] = function($c) {
+$container['logger'] = function ($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler(__DIR__ . '../logs/app.log');
     $logger->pushHandler($file_handler);
@@ -75,16 +75,18 @@ $app->get(
         );
     }
 )->add(new \DavidePastore\Slim\Validation\Validation(
+    // phpcs:disable
     [
-        \rmswing\EventsController::CATEGORY_PARAMETER        => v::optional(v::in(\rmswing\EventsController::CATEGORY_VALID)),
-        \rmswing\EventsController::END_DATE_PARAMETER        => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::PAGE_SIZE_PARAMETER       => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::PAGING_PARAMETER          => v::optional(v::boolVal()),
-        \rmswing\EventsController::SORT_ORDER_PARAMETER      => v::optional(v::in(\rmswing\EventsController::SORT_ORDER_VALID)),
-        \rmswing\EventsController::START_DATE_PARAMETER      => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::OFFSET_PARAMETER          => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::LIMIT_PARAMETER           => v::optional(v::numeric()->positive()),
+        \rmswing\EventsController::CATEGORY_PARAMETER   => v::optionalq(v::in(\rmswing\EventsController::CATEGORY_VALID)),
+        \rmswing\EventsController::END_DATE_PARAMETER        => v::optionalq(v::numeric()->positive()),
+        \rmswing\EventsController::PAGE_SIZE_PARAMETER       => v::optionalq(v::numeric()->positive()),
+        \rmswing\EventsController::PAGING_PARAMETER          => v::optionalq(v::boolVal()),
+        \rmswing\EventsController::SORT_ORDER_PARAMETER      => v::optionalq(v::in(\rmswing\EventsController::SORT_ORDER_VALID)),
+        \rmswing\EventsController::START_DATE_PARAMETER      => v::optionalq(v::numeric()->positive()),
+        \rmswing\EventsController::OFFSET_PARAMETER          => v::optionalq(v::numeric()->positive()),
+        \rmswing\EventsController::LIMIT_PARAMETER           => v::optionalq(v::numeric()->positive()),
     ]
+    // phpcs:enable
 ));
 
 try {

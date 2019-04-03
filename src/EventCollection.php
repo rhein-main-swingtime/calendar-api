@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /**
  * DOCBLOCKSTUFF
@@ -25,12 +25,15 @@ class EventCollection implements EventParametersInterface
      */
     protected $sortedDirection = '';
 
+    /** @var string */
+    protected $sortOrder = '';
+
     /**
      * @return EventCollection
      */
     public static function create()
     {
-       return new self();
+        return new self();
     }
 
 
@@ -55,8 +58,8 @@ class EventCollection implements EventParametersInterface
      */
     public function addToCollection(Event $event): void
     {
-        $id = $this->genUniqueID($event);
-        $this->events[$id] = $event;
+        $eventId = $this->genUniqueID($event);
+        $this->events[$eventId] = $event;
     }
 
     /**
@@ -129,7 +132,8 @@ class EventCollection implements EventParametersInterface
         ?int $pageLength,
         ?int $limit,
         ?int $offset
-    ): array {
+    ): array
+    {
 
         if (gettype($startTime) === 'string') {
             $startTime = strtotime($startTime);
@@ -174,27 +178,25 @@ class EventCollection implements EventParametersInterface
     {
         $sortedCollection = array_filter(
             $this->events,
-            function($element) use ($startDate, $endDate) {
+            function ($element) use ($startDate, $endDate) {
                 /** @var Event $element */
-                return (
-                    $element->getStartTime() >= $startDate
-                    && $element->getEndTime() <= $endDate
-                );
+                return ($element->getStartTime() >= $startDate
+                    && $element->getEndTime() <= $endDate);
             }
         );
 
         uasort(
             $sortedCollection,
-            function ($a, $b) use ($order) {
-                /** @var Event $a */
-                /** @var Event $b */
-                $aTime = $a->getStartTime();
-                $bTime = $b->getStartTime();
+            function ($first, $second) use ($order) {
+                /** @var Event $first */
+                /** @var Event $second */
+                $firstTime = $first->getStartTime();
+                $secondTime = $second->getStartTime();
 
                 if ($order === self::SORT_ORDER_ASC) {
-                    return $aTime - $bTime;
+                    return $firstTime - $secondTime;
                 }
-                return $bTime - $aTime;
+                return $secondTime - $firstTime;
             }
         );
 
@@ -226,38 +228,26 @@ class EventCollection implements EventParametersInterface
         int $pageLength
     ): array
     {
-
-        $now = time() + 15 * 60 ; // We'll show events that actually start in 15 minutes as currently running.
         $collection['pages'] = array_chunk(
             array_keys($collection['events']),
-            $pageLength, false
+            $pageLength,
+            false
         );
-
         return $collection;
     }
 
     /**
-     * @param EventCollection $collection
-     */
-    public function addCollectionToCollection(EventCollection $collection): void
-    {
-        foreach ($collection->getEvents() as $event) {
-            $this->addToCollection($event);
-        }
-    }
-
-    /**
      * @param mixed ...$collections
+     * @deprecated This seems redundant right now.
+     * @todo either fix or remove
      */
     public function addCollectionsToCollection(...$collections)
     {
-        foreach ($collections as $collection) {
-            /** @var EventCollection $collection */
-            //$this->events[] = $collection->getEvents();
-            foreach ($collection->getEvents() as $event) {
-                $this->addToCollection($event);
-            }
-        }
+        // foreach ($collections as $collection) {
+        //     /** @var EventCollection $collection */
+        //     foreach ($collection->getEvents() as $event) {
+        //         $this->addToCollection($event);
+        //     }
+        // }
     }
-
 }

@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /**
  * DOCBLOCKSTUFF
@@ -7,7 +7,6 @@ declare(strict_types=1);
  */
 
 namespace rmswing;
-
 
 interface EventParametersInterface
 {
@@ -63,5 +62,4 @@ interface EventParametersInterface
     public const CURRENTLY_RUNNING_DISABLED = '';
     public const CURRENTLY_RUNNING_DEFAULT  = self::CURRENTLY_RUNNING_DISABLED;
     public const CURRENTLY_RUNNING_PARAMETER = 'currentlyRunning';
-
 }

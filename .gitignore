@@ -1,4 +1,14 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+# Editor settings
+workspace.xml
+.vscode
+.idea
+
+# OS X
+.DS_Store
+
+# Project 
 vendor/*
 /config/google_credentials.json
 /credentials/*

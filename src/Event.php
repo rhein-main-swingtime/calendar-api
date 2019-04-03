@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /**
  * DOCBLOCKSTUFF
@@ -75,19 +75,19 @@ class Event implements \JsonSerializable
      * @param null|string $description
      */
     public function __construct(
-        ?int $startTime,
-        ?int $endTime,
-        ?string $location,
-        ?string $id,
-        ?string $htmlLink,
-        ?string $summary,
-        ?array $categories,
-        ?string $description
+        ? int $startTime,
+        ? int $endTime,
+        ? string $location,
+        ? string $id,
+        ? string $htmlLink,
+        ? string $summary,
+        ? array $categories,
+        ? string $description
     ) {
         $this->setTime($startTime, 'startTime');
         $this->setTime($endTime, 'endTime');
         $this->location = $location;
-        $this->SourceEventId =$id;
+        $this->SourceEventId = $id;
         $this->htmlLink = $htmlLink;
         $this->summary = $summary;
         $this->categories = $categories;
@@ -107,16 +107,22 @@ class Event implements \JsonSerializable
      * @param $prop
      * @return bool
      */
-    public function __isset($prop) : bool
+    public function __isset($prop): bool
     {
         return isset($this->$prop);
     }
 
     /**
-     * @param int $time
+     * Sets a flag if the event happens right now.
+     * 
+     * @param int|null $time Timestamp of current time.
+     * @return void
      */
-    public function isCurrent(int $time): void {
-        if ($this->getStartTime() <= $time && $this->getEndTime() >= $time ){
+    public function isCurrent(? int $time): void
+    {
+        $time ?? time();
+
+        if ($this->getStartTime() <= $time && $this->getEndTime() >= $time) {
             $this->happensRightNow = true;
         } else {
             $this->happensRightNow = false;
@@ -129,7 +135,7 @@ class Event implements \JsonSerializable
      */
     public function setTime($time, string $field): void
     {
-        if (!in_array($field, ['endTime', 'startTime'])){
+        if (!in_array($field, ['endTime', 'startTime'])) {
             throw new \InvalidArgumentException('$field can only be "end" or "start"');
         }
 
@@ -199,7 +205,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getLocation(): ?string
+    public function getLocation(): ? string
     {
         return $this->location;
     }
@@ -207,7 +213,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getSourceEventId(): ?string
+    public function getSourceEventId(): ? string
     {
         return $this->SourceEventId;
     }
@@ -215,7 +221,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getHtmlLink(): ?string
+    public function getHtmlLink(): ? string
     {
         return $this->htmlLink;
     }
@@ -223,7 +229,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getSummary(): ?string
+    public function getSummary(): ? string
     {
         return $this->summary;
     }
@@ -231,7 +237,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getCategory(): ?string
+    public function getCategory(): ? string
     {
         return $this->categories;
     }
@@ -239,7 +245,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getDescription(): ?string
+    public function getDescription(): ? string
     {
         return $this->description;
     }
