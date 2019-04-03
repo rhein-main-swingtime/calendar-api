@@ -31,7 +31,9 @@ class EventsController extends AbstractController implements EventParametersInte
             self::END_DATE_PARAMETER    => strtotime('+6 months'),
             self::PAGING_PARAMETER      => true,
             self::PAGE_SIZE_PARAMETER   => 5,
-            self::SORT_ORDER_PARAMETER  => self::SORT_ORDER_ASC
+            self::SORT_ORDER_PARAMETER  => self::SORT_ORDER_ASC,
+            self::OFFSET_PARAMETER      => 0,
+            self::LIMIT_PARAMETER       => false,
         ];
     }
 
@@ -54,8 +56,8 @@ class EventsController extends AbstractController implements EventParametersInte
 
         // @todo hacky bullshit solution, extend validation class?
         $parameters['paging'] = filter_var($parameters['paging'], FILTER_VALIDATE_BOOLEAN);
-        $parameters['offset'] = (int)$parameters['offset'];
-        $parameters['limit'] = (int)$parameters['limit'];
+        $parameters['offset'] = (int) $parameters['offset'];
+        $parameters['limit'] = (int) $parameters['limit'];
 
         // if nothing provided, let's use the default
         // because - after all - that's what defaults are for!

@@ -175,11 +175,12 @@ class EventCollection implements EventParametersInterface
             function ($element) use ($startDate, $endDate) {
                 /** @var Event $element */
 
+                // Never repeat yourself, Dummy! Repeat vars endlessly instead!
                 $eventStartTime = $element->getStartTime();
                 $eventEndTime   = $element->getEndTime();
 
-                if ($eventStartTime() >= $startDate
-                    && $eventStartTime() <= $endDate) {
+                if ($eventStartTime >= $startDate
+                    && $eventStartTime <= $endDate) {
                         // Event starts after the searched for start date
                         // AND event ends before the searched-for end date
                         return true;
@@ -190,7 +191,7 @@ class EventCollection implements EventParametersInterface
                          return true;
                 } elseif ($eventStartTime >= $startDate
                           && $eventEndTime > $endDate) {
-                        // event starts after searched-for start date
+                        // Event starts after searched-for start date
                         // AND event ends after searched-for end date
                         return true;
                 }

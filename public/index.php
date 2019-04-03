@@ -43,7 +43,6 @@ $container['eventsController'] = function (ContainerInterface $c) {
 $app->get(
     '/events/' . \rmswing\EventsController::CATEGORY_PARAMETER_URL,
     function (Request $request, Response $response, $args) use ($app) {
-
         // For now this is a purely json based api
         $response = $response->withHeader('Content-Type', 'application/json');
 
