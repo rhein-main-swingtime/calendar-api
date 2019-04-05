@@ -41,7 +41,9 @@ $container['eventsController'] = function (ContainerInterface $c) {
 
 
 $app->get(
-    '/events/' . \rmswing\EventsController::CATEGORY_PARAMETER_URL,
+    '/events'
+    . \rmswing\EventsController::EVENT_LIST_MODE_URL
+    . \rmswing\EventsController::CATEGORY_PARAMETER_URL,
     function (Request $request, Response $response, $args) use ($app) {
         // For now this is a purely json based api
         $response = $response->withHeader('Content-Type', 'application/json');
@@ -78,12 +80,13 @@ $app->get(
     [
         \rmswing\EventsController::CATEGORY_PARAMETER   => v::optional(v::in(\rmswing\EventsController::CATEGORY_VALID)),
         \rmswing\EventsController::END_DATE_PARAMETER   => v::optional(v::numeric()->positive()),
+        \rmswing\EventsController::EVENT_LIST_MODE_LIST => v::in(\rmswing\EventsController::EVENT_LIST_MODE_VALID),
+        \rmswing\EventsController::LIMIT_PARAMETER      => v::optional(v::numeric()->positive()),
+        \rmswing\EventsController::OFFSET_PARAMETER     => v::optional(v::numeric()->positive()),
         \rmswing\EventsController::PAGE_SIZE_PARAMETER  => v::optional(v::numeric()->positive()),
         \rmswing\EventsController::PAGING_PARAMETER     => v::optional(v::boolVal()),
         \rmswing\EventsController::SORT_ORDER_PARAMETER => v::optional(v::in(\rmswing\EventsController::SORT_ORDER_VALID)),
         \rmswing\EventsController::START_DATE_PARAMETER => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::OFFSET_PARAMETER     => v::optional(v::numeric()->positive()),
-        \rmswing\EventsController::LIMIT_PARAMETER      => v::optional(v::numeric()->positive()),
     ]
     // phpcs:enable
 ));

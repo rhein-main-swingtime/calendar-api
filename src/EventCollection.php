@@ -54,8 +54,9 @@ class EventCollection implements EventParametersInterface
      */
     public function addToCollection(Event $event): void
     {
-        $eventId = $this->genUniqueID($event);
-        $this->events[$eventId] = $event;
+        // $eventId = $this->genUniqueID($event);
+        // $this->events[$eventId] = $event;
+        $this->events[] = $event;
     }
 
     /**
@@ -125,17 +126,16 @@ class EventCollection implements EventParametersInterface
         string $order,
         $startTime,
         $endTime,
-        bool $paging,
-        ?int $pageLength,
+        string $listMode,
         ?int $limit,
         ?int $offset
     ): array {
 
-        if (gettype($startTime) === 'string') {
+        if (is_string($startTime)) {
             $startTime = strtotime($startTime);
         }
 
-        if (gettype($endTime) === 'string') {
+        if (is_string($endTime)) {
             $endTime = strtotime($endTime);
         }
 
@@ -143,14 +143,16 @@ class EventCollection implements EventParametersInterface
             $order,
             $startTime,
             $endTime,
+            $listMode,
             $limit,
             $offset
         );
 
         // @todo find a more elegant solution
-        if ($paging === true) {
-            $out = $this->getEventPages($out, $pageLength);
-        }
+        // @todo actually: Nobody really needs that.
+        // if ($paging === true) {
+        //     $out = $this->getEventPages($out, $pageLength);
+        // }
 
         return $out;
     }
@@ -167,6 +169,7 @@ class EventCollection implements EventParametersInterface
         string $order,
         $startDate,
         $endDate,
+        string $listMode,
         ?int $limit,
         ?int $offset
     ): array {
@@ -200,7 +203,7 @@ class EventCollection implements EventParametersInterface
             }
         );
 
-        uasort(
+        usort(
             $sortedCollection,
             function ($first, $second) use ($order) {
                 /** @var Event $first */
@@ -215,11 +218,11 @@ class EventCollection implements EventParametersInterface
             }
         );
 
-        if ($limit !== null || $offset !== null) {
+        if (($limit !== null && $limit > 0) || $offset !== null) {
             $sortedCollection = array_slice(
                 $sortedCollection,
                 $offset ?? 0,
-                $limit
+                ($limit > 0 ? $limit : null)
             );
         }
 
@@ -230,13 +233,36 @@ class EventCollection implements EventParametersInterface
             $ele->isCurrent($now);
         }
 
+
+
+        if ($listMode === self::EVENT_LIST_MODE_CALENDAR) {
+            $sortedCollection = $this->getCalendarizedList($sortedCollection);
+        }
+
         return $sortedCollection;
+    }
+
+
+    private function getCalendarizedList(array $collection): array
+    {
+        $out = [];
+        foreach ($collection as $event) {
+            /** @var \rmswing\Event $event */
+            $formatedDate = date('Y-m-d', $event->getStartTime());
+            if (!array_key_exists($formatedDate, $out)) {
+                $out[$formatedDate] = [];
+            }
+            $out[$formatedDate][] = $event;
+        }
+
+        return $out;
     }
 
     /**
      * @param array $collection
      * @param int $pageLength
      * @return array
+     * @deprecated Nobody actually needs that shit anyways.
      */
     private function getEventPages(
         array $collection,

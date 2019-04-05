@@ -148,7 +148,7 @@ class Google
      * @param array $sources
      * @param array $params
      * @param array $settings
-     * @param EventCollection $collection
+     * @param EventCollection $collection Collection these events will be added to
      * @param EventLabeler $labelPrinter
      * @param null|LoggerInterface $logger
      */

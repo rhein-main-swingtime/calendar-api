@@ -47,12 +47,19 @@ interface EventParametersInterface
     public const PAGE_SIZE_PARAMETER = 'pageSize';
     public const PAGE_SIZE_DEFAULT = '5';
 
+    // List Mode
+    public const EVENT_LIST_MODE        = 'list';
+    public const EVENT_LIST_MODE_URL    = '/{' . self::EVENT_LIST_MODE . '}';
+    public const EVENT_LIST_MODE_LIST   = 'list';
+    public const EVENT_LIST_MODE_CALENDAR = 'calendar';
+    public const EVENT_LIST_MODE_VALID  = [ self::EVENT_LIST_MODE_CALENDAR, self::EVENT_LIST_MODE_LIST ];
+
     // Category
     public const CATEGORY_SOCIAL    = 'social';
     public const CATEGORY_CLASS     = 'class';
     public const CATEGORY_ALL       = 'all';
     public const CATEGORY_PARAMETER = 'category';
-    public const CATEGORY_PARAMETER_URL = '[{' . self::CATEGORY_PARAMETER . '}]';
+    public const CATEGORY_PARAMETER_URL = '/[{' . self::CATEGORY_PARAMETER . '}]';
     public const CATEGORY_DEFAULT   = self::CATEGORY_ALL;
     public const CATEGORY_VALID     = [
         self::CATEGORY_ALL, self::CATEGORY_CLASS, self::CATEGORY_SOCIAL
