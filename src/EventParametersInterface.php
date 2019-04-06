@@ -26,7 +26,7 @@ interface EventParametersInterface
     ];
 
     // Start/End Date
-    public const START_DATE_DEFAULT     = 'now';
+    public const START_DATE_DEFAULT     = 'today';
     public const START_DATE_PARAMETER   = 'start';
     public const END_DATE_PARAMETER     = 'end';
     public const END_DATE_DEFAULT       = '+6 months';

@@ -26,8 +26,8 @@ abstract class AbstractController
     abstract public static function create();
 
     /**
-     * @param Logger
-     * @param RequestInterface $request
+     * @param Logger $logger
+     * @param RequestInterface $request Request
      * @param ResponseInterface $response
      * @param array $args
      * @param array $settings

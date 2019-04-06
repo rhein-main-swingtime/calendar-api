@@ -19,8 +19,7 @@ require_once __DIR__
     . DIRECTORY_SEPARATOR
     . 'config/config.php';
 
-
-
+$config = $config ?? [];
 $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
@@ -51,7 +50,7 @@ $app->get(
         // Bail out from calling the controller if we have input errors
         if ($request->getAttribute('has_errors') === true) {
             $response->getBody()->write(
-                json_encode(
+                (string) json_encode(
                     $request->getAttribute('errors'),
                     JSON_PRETTY_PRINT
                 )

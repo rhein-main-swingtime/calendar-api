@@ -32,23 +32,6 @@ class EventCollection implements EventParametersInterface
         return new self();
     }
 
-
-    /**
-     * @param Event $event
-     * @return string
-     */
-    private function genUniqueID(Event $event): string
-    {
-        return str_replace(
-            '.',
-            '_',
-            uniqid(
-                md5($event->getSourceEventId()) . '_',
-                true
-            )
-        );
-    }
-
     /**
      * @param Event $event
      */
@@ -69,59 +52,21 @@ class EventCollection implements EventParametersInterface
         if (!in_array($sortOrder, self::SORT_ORDER_VALID)) {
             throw new \InvalidArgumentException("$sortOrder is not allowed");
         }
-
         $this->sortOrder = $sortOrder;
+
     }
 
-
-    /**
-     * Enables paging for the collection
-     *
-     * @param bool $paging
-     */
-    public function enablePaging(bool $paging): void
-    {
-        $this->pageingEnabled = $paging;
-    }
-
-    /**
-     * @param bool $currentlyRunning
-     */
-    public function enableCurrentlyRunning(bool $currentlyRunning): void
-    {
-        $this->currentlyRunning = $currentlyRunning;
-    }
-
-    /**
-     * @param int $pageLength
-     */
-    public function setPageLength(int $pageLength): void
-    {
-        if ($pageLength < 1) {
-            throw new \InvalidArgumentException('$pageLength must be bigger than zero.');
-        }
-        $this->pageLength = $pageLength;
-    }
-
-    /**
-     * @param string $startDate
-     */
-    public function setStartDate(string $startDate): void
-    {
-        $this->startDate = $startDate;
-    }
-
-    /**
-     * @param string $endDate
-     */
-    public function setEndDate(string $endDate): void
-    {
-        $this->endDate = $endDate;
-    }
-
-    /**
-     * @return Event[]
-     */
+/**
+ * Returns sorted array of events
+ *
+ * @param string        $order      Order, see self::SORT_ORDER_VALID
+ * @param mixed         $startTime  Can be either RFC3223 formated or unix timestamp
+ * @param mixed         $endTime    Can be either RFC3223 formated or unix timestamp
+ * @param string        $listMode   List mode, see self::EVENT_LIST_MODE_VALID
+ * @param integer|null  $limit      Limit of events
+ * @param integer|null  $offset     Offset
+ * @return array
+ */
     public function getEvents(
         string $order,
         $startTime,
@@ -148,21 +93,15 @@ class EventCollection implements EventParametersInterface
             $offset
         );
 
-        // @todo find a more elegant solution
-        // @todo actually: Nobody really needs that.
-        // if ($paging === true) {
-        //     $out = $this->getEventPages($out, $pageLength);
-        // }
-
         return $out;
     }
 
     /**
-     * @param string $order
-     * @param $startDate
-     * @param $endDate
-     * @param int|null $limit
-     * @param int|null $offset
+     * @param string    $order
+     * @param mixed     $startDate
+     * @param mixed     $endDate
+     * @param int|null  $limit
+     * @param int|null  $offset
      * @return array
      */
     private function getSortedCollection(
@@ -182,6 +121,8 @@ class EventCollection implements EventParametersInterface
                 $eventStartTime = $element->getStartTime();
                 $eventEndTime   = $element->getEndTime();
 
+                $diff = $startDate - $eventStartTime;
+
                 if ($eventStartTime >= $startDate
                     && $eventStartTime <= $endDate) {
                         // Event starts after the searched for start date
@@ -198,6 +139,7 @@ class EventCollection implements EventParametersInterface
                         // AND event ends after searched-for end date
                         return true;
                 }
+
                 // all other cases:
                 return false;
             }
@@ -232,8 +174,6 @@ class EventCollection implements EventParametersInterface
             /** @var Event $ele */
             $ele->isCurrent($now);
         }
-
-
 
         if ($listMode === self::EVENT_LIST_MODE_CALENDAR) {
             $sortedCollection = $this->getCalendarizedList($sortedCollection);

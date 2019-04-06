@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace rmswing\eventsources;
 
-use Monolog\Logger;
-use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use rmswing\Event;
 use rmswing\EventCollection;
@@ -78,14 +76,8 @@ class Google
             // Default highest number, since we'll consolidate later,
             // let's grab everything we can get our hands on!
             'maxResults' => 2500,
-            // Whatever, we'll sort later
-            'orderBy' => 'startTime',
             // Do not change this shit, seriously.
             'singleEvents' => true,
-            // yeah, let's filter a bit
-            // @todo maybe don't, depends, lets look into that
-            'timeMin' => date('c', $params['start']),
-            'timeMax' => date('c', $params['end']),
         ];
     }
 

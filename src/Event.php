@@ -29,9 +29,8 @@ class Event implements \JsonSerializable
      * @var string
      */
     protected $endTimeRFC;
-
     /**
-     * @var string
+     * @var string|null
      */
     protected $location;
     /**
@@ -39,7 +38,7 @@ class Event implements \JsonSerializable
      */
     protected $SourceEventId;
     /**
-     * @var string
+     * @var string|null
      */
     protected $htmlLink;
     /**
@@ -47,7 +46,7 @@ class Event implements \JsonSerializable
      */
     protected $summary;
     /**
-     * @var string
+     * @var string[]|null
      */
     protected $categories;
     /**
@@ -61,37 +60,37 @@ class Event implements \JsonSerializable
 
     /**
      * Event constructor.
-     * @param int|null $startTime
-     * @param int|null $endTime
-     * @param null|string $location
-     * @param null|string $id
-     * @param null|string $htmlLink
-     * @param null|string $summary
-     * @param array|null $categories
-     * @param null|string $description
+     * @param int           $startTime
+     * @param int           $endTime
+     * @param string        $location
+     * @param string|null   $id
+     * @param null|string   $htmlLink
+     * @param string        $summary
+     * @param array|null    $categories
+     * @param string        $description
      */
     public function __construct(
-        ? int $startTime,
-        ? int $endTime,
-        ? string $location,
-        ? string $id,
-        ? string $htmlLink,
-        ? string $summary,
-        ? array $categories,
-        ? string $description
+        int     $startTime,
+        int     $endTime,
+        string  $location,
+        ?string $id,
+        ?string $htmlLink,
+        string  $summary,
+        ?array  $categories,
+        string  $description
     ) {
         $this->setTime($startTime, 'startTime');
         $this->setTime($endTime, 'endTime');
         $this->location = $location;
-        $this->SourceEventId = $id;
+        $this->SourceEventId = $id ?? '';
         $this->htmlLink = $htmlLink;
         $this->summary = $summary;
-        $this->categories = $categories;
+        $this->categories = $categories ?? [];
         $this->description = $description;
     }
 
     /**
-     * @param $prop
+     * @param mixed $prop
      * @return mixed
      */
     public function __get($prop)
@@ -100,7 +99,7 @@ class Event implements \JsonSerializable
     }
 
     /**
-     * @param $prop
+     * @param mixed $prop
      * @return bool
      */
     public function __isset($prop): bool
@@ -126,13 +125,13 @@ class Event implements \JsonSerializable
     }
 
     /**
-     * @param $time
-     * @param string Field to set, can be 'end' or 'start'
+     * @param mixed     $time
+     * @param string    $field Field to set, can be 'end' or 'start'
      */
     public function setTime($time, string $field): void
     {
         if (!in_array($field, ['endTime', 'startTime'])) {
-            throw new \InvalidArgumentException('$field can only be "end" or "start"');
+            throw new \InvalidArgumentException('$field can only be "endTime" or "startTime"');
         }
 
         if (gettype($time) === 'integer') {
@@ -191,9 +190,9 @@ class Event implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array|null
      */
-    public function getCategories(): string
+    public function getCategories(): ?array
     {
         return $this->categories;
     }
@@ -201,7 +200,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getLocation(): ? string
+    public function getLocation(): ?string
     {
         return $this->location;
     }
@@ -209,7 +208,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getSourceEventId(): ? string
+    public function getSourceEventId(): ?string
     {
         return $this->SourceEventId;
     }
@@ -217,7 +216,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getHtmlLink(): ? string
+    public function getHtmlLink(): ?string
     {
         return $this->htmlLink;
     }
@@ -225,7 +224,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getSummary(): ? string
+    public function getSummary(): ?string
     {
         return $this->summary;
     }
@@ -233,15 +232,7 @@ class Event implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getCategory(): ? string
-    {
-        return $this->categories;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDescription(): ? string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
